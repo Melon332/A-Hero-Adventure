@@ -24,9 +24,7 @@ int main(int argc, char* argv[])
 
     SetTargetFPS(60);
 
-    Character knight{};
-
-    knight.setScreenPos(windowDimensions[0],windowDimensions[1]);
+    Character knight{windowDimensions[0],windowDimensions[1]};
 
     bool hasStarted{false};
     
@@ -49,7 +47,7 @@ int main(int argc, char* argv[])
         
             DrawTextureEx(tileMap,mapPos,0,mapScale,WHITE);
             knight.tick(GetFrameTime());
-            knight.keepCharacterInBound(knight,tileMap.width * mapScale,tileMap.height * mapScale,windowDimensions[0],windowDimensions[1]);
+            knight.keepCharacterInBound(knight,tileMap.width * mapScale,tileMap.height * mapScale,(float)windowDimensions[0],(float)windowDimensions[1]);
         }
         
         EndDrawing();

@@ -5,12 +5,11 @@ class Character
 {
 public:
     Vector2 getWorldPos() { return worldPos;}
-    void setScreenPos(int winWidth, int winHeight);
     void tick(float deltaTime);
-    void startFunction(int width, int height);
+    void startFunction(int windowWidth, int windowHeight);
     void keepCharacterInBound(Character character, float mapWidth, float mapHeight,float windowWidth, float windowHeight);
     void undoMovement();
-    Character();
+    Character(int winWidth, int winHeight);
     
 private:
     //Texture variables
@@ -27,7 +26,7 @@ private:
     int frame{0};
     const float speed {10};
     const float scale{4.0};
-    float width;
-    float height;
-    Vector2 lastFrameWorldPos;
+    float width{};
+    float height{};
+    Vector2 lastFrameWorldPos{};
 };

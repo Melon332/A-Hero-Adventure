@@ -1,14 +1,10 @@
 ﻿#include "character.h"
 
-Character::Character()
+Character::Character(int winWidth, int winHeight)
 {
     width = (float)currentTexture.width/maxFrame;
-    height = currentTexture.height;
-}
-
-void Character::setScreenPos(int winWidth, int winHeight)
-{
-    screenPos = {(float)winWidth / 2.0f - 4.0f * (0.5f * width), (float)winHeight / 2.0f - 4.0f * (0.5f * height)};
+    height = (float)currentTexture.height;
+    screenPos = {static_cast<float>(winWidth) / 2.0f - scale * (0.5f * width), static_cast<float>(winHeight) / 2.0f - scale * (0.5f * height)};
 }
 void Character::tick(float deltaTime)
 {
@@ -47,10 +43,10 @@ void Character::tick(float deltaTime)
         
     DrawTexturePro(currentTexture,sourceRectKnight,destRectKnight,{0,0},0,WHITE);
 }
-void Character::startFunction(int width, int height)
+void Character::startFunction(int windowWidth, int windowHeight)
 {
     int measure = MeasureText("Press any key to start!",20);
-    DrawText("Press W to start!", width / 2 - measure / 2.5f , height / 2, 20 , SKYBLUE);
+    DrawText("Press W to start!", static_cast<float>(windowWidth) / 2.f - (float)measure / 2.5f , windowHeight / 2, 20 , SKYBLUE);
 }
 void Character::keepCharacterInBound(Character character, float mapWidth, float mapHeight, float windowWidth, float windowHeight)
 {
