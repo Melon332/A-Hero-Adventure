@@ -5,9 +5,13 @@ class Character
 {
 public:
     Vector2 getWorldPos() { return worldPos;}
-    void setScreenPos(int width, int height);
+    void setScreenPos(int winWidth, int winHeight);
     void tick(float deltaTime);
     void startFunction(int width, int height);
+    void keepCharacterInBound(Character character, float mapWidth, float mapHeight,float windowWidth, float windowHeight);
+    void undoMovement();
+    Character();
+    
 private:
     //Texture variables
     Texture2D currentTexture{LoadTexture("characters/knight_idle_spritesheet.png")};
@@ -19,8 +23,11 @@ private:
     float rightLeft{0.f};
     float runningTime{0.f};
     const float updateTime{1.f/12.f};
-    const int maxFrame{5};
+    const int maxFrame{6};
     int frame{0};
     const float speed {10};
     const float scale{4.0};
+    float width;
+    float height;
+    Vector2 lastFrameWorldPos;
 };

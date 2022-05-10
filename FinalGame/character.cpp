@@ -1,8 +1,14 @@
 ﻿#include "character.h"
 
-void Character::setScreenPos(int width, int height)
+Character::Character()
 {
-    screenPos = {(float)width / 2.0f - 4.0f * (0.5f * (float)currentTexture.width/6), (float)height / 2.0f - 4.0f * (0.5f * (float)currentTexture.height)};
+    width = (float)currentTexture.width/maxFrame;
+    height = currentTexture.height;
+}
+
+void Character::setScreenPos(int winWidth, int winHeight)
+{
+    screenPos = {(float)winWidth / 2.0f - 4.0f * (0.5f * width), (float)winHeight / 2.0f - 4.0f * (0.5f * height)};
 }
 void Character::tick(float deltaTime)
 {
@@ -11,6 +17,8 @@ void Character::tick(float deltaTime)
     if(IsKeyDown(KEY_D)) direction.x += 1;
     if(IsKeyDown(KEY_W)) direction.y -= 1;
     if(IsKeyDown(KEY_S)) direction.y += 1;
+
+    lastFrameWorldPos = worldPos;
 
     if(Vector2Length(direction) != 0.0)
     {
@@ -33,8 +41,8 @@ void Character::tick(float deltaTime)
             frame = 0;
         }
     }
-    Rectangle sourceRectKnight{(float)currentTexture.width/6 * frame,0, rightLeft * (float)currentTexture.width/6,(float)currentTexture.height};
-    Rectangle destRectKnight{screenPos.x,screenPos.y,(float)currentTexture.width/6 * scale,(float)currentTexture.height * scale};
+    Rectangle sourceRectKnight{width * frame,0, rightLeft * width ,height};
+    Rectangle destRectKnight{screenPos.x,screenPos.y,width * scale, height * scale};
 
         
     DrawTexturePro(currentTexture,sourceRectKnight,destRectKnight,{0,0},0,WHITE);
@@ -44,3 +52,18 @@ void Character::startFunction(int width, int height)
     int measure = MeasureText("Press any key to start!",20);
     DrawText("Press W to start!", width / 2 - measure / 2.5f , height / 2, 20 , SKYBLUE);
 }
+void Character::keepCharacterInBound(Character character, float mapWidth, float mapHeight, float windowWidth, float windowHeight)
+{
+    if(character.getWorldPos().x < 0 ||
+        character.getWorldPos().y < 0 ||
+        character.getWorldPos().x + windowWidth > mapWidth ||
+        character.getWorldPos().y + windowHeight > mapHeight)
+    {
+        undoMovement();
+    } 
+}
+void Character::undoMovement()
+{
+    worldPos = lastFrameWorldPos;
+}
+

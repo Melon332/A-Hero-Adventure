@@ -14,6 +14,8 @@ bool isOnGround(int yPos, int windowHeight, int height)
 int main(int argc, char* argv[])
 {
     const int windowDimensions[2]{384,384};
+
+    const float mapScale{4};
     
     InitWindow(windowDimensions[0],windowDimensions[1],"The final project!");
 
@@ -45,9 +47,9 @@ int main(int argc, char* argv[])
         {
             mapPos = Vector2Scale(knight.getWorldPos(),-1);
         
-            DrawTextureEx(tileMap,mapPos,0,4,WHITE);
-
+            DrawTextureEx(tileMap,mapPos,0,mapScale,WHITE);
             knight.tick(GetFrameTime());
+            knight.keepCharacterInBound(knight,tileMap.width * mapScale,tileMap.height * mapScale,windowDimensions[0],windowDimensions[1]);
         }
         
         EndDrawing();
