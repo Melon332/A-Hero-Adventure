@@ -4,6 +4,7 @@
 #include "raymath.h"
 #include "character.h"
 #include "Prop.h"
+#include "Enemy.h"
 
 
 bool isOnGround(int yPos, int windowHeight, int height)
@@ -26,49 +27,36 @@ int main(int argc, char* argv[])
     SetTargetFPS(60);
 
     Character knight{windowDimensions[0],windowDimensions[1]};
-    Prop rock{Vector2{},LoadTexture("nature_tileset/Rock.png")};
+    enemy goblin{Vector2{600, 300},LoadTexture("characters/goblin_idle_spritesheet.png"),LoadTexture("characters/goblin_run_spritesheet.png")};
 
     Prop prop[2]{Prop{Vector2{600,300},LoadTexture("nature_tileset/Rock.png")},Prop{Vector2{400,500},LoadTexture("nature_tileset/Log.png")}};
-
-    bool hasStarted{false};
     
     while (!WindowShouldClose())
     {
         BeginDrawing();
         ClearBackground(WHITE);
-        if(!hasStarted)
+        mapPos = Vector2Scale(knight.getWorldPos(),-1);
+
+        //Draw map
+        DrawTextureEx(tileMap,mapPos,0,mapScale,WHITE);
+
+        //Draw props
+        for (auto props : prop)
         {
-            //DrawText("Press W to start!", windowDimensions[0], windowDimensions[1], 5 , BLACK);
-            if(IsKeyDown(KEY_W))
-            {
-                hasStarted = true;
-            }
-            knight.startFunction(windowDimensions[0],windowDimensions[1]);
+            props.Render(knight.getWorldPos());
         }
-        else
+
+        //Draw knight
+        knight.tick(GetFrameTime());
+        knight.keepCharacterInBound(knight,tileMap.width * mapScale,tileMap.height * mapScale,(float)windowDimensions[0],(float)windowDimensions[1]);
+        for (auto props : prop)
         {
-            mapPos = Vector2Scale(knight.getWorldPos(),-1);
-
-            //Draw map
-            DrawTextureEx(tileMap,mapPos,0,mapScale,WHITE);
-
-            //Draw props
-            for (auto props : prop)
+            if(CheckCollisionRecs(knight.getCollisionRect(),props.getCollisionRect(knight.getWorldPos())))
             {
-                props.Render(knight.getWorldPos());
-            }
-
-            //Draw
-            knight.tick(GetFrameTime());
-            knight.keepCharacterInBound(knight,tileMap.width * mapScale,tileMap.height * mapScale,(float)windowDimensions[0],(float)windowDimensions[1]);
-            for (auto props : prop)
-            {
-                if(CheckCollisionRecs(knight.getCollisionRect(),props.getCollisionRect(knight.getWorldPos())))
-                {
-                    knight.undoMovement();
-                }
+                knight.undoMovement();
             }
         }
+        goblin.tick(GetFrameTime());
         
         EndDrawing();
     }

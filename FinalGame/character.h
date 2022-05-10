@@ -4,6 +4,7 @@
 class Character
 {
 public:
+    Character(int winWidth, int winHeight);
     Vector2 getWorldPos() { return worldPos;}
     void tick(float deltaTime);
     void startFunction(int windowWidth, int windowHeight);
@@ -11,7 +12,6 @@ public:
     void undoMovement();
     void unloadTexture();
     Rectangle getCollisionRect();
-    Character(int winWidth, int winHeight);
     
 private:
     //Texture variables
