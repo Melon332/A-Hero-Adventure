@@ -62,4 +62,16 @@ void Character::undoMovement()
 {
     worldPos = lastFrameWorldPos;
 }
+void Character::unloadTexture()
+{
+    UnloadTexture(currentTexture);
+    UnloadTexture(run);
+    UnloadTexture(idle);
+}
+Rectangle Character::getCollisionRect()
+{
+    return Rectangle{screenPos.x,screenPos.y,width * scale,height * scale};
+}
+
+
 

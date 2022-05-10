@@ -9,6 +9,8 @@ public:
     void startFunction(int windowWidth, int windowHeight);
     void keepCharacterInBound(Character character, float mapWidth, float mapHeight,float windowWidth, float windowHeight);
     void undoMovement();
+    void unloadTexture();
+    Rectangle getCollisionRect();
     Character(int winWidth, int winHeight);
     
 private:

@@ -156,12 +156,14 @@
   <ItemGroup>
     <ClCompile Include="character.cpp" />
     <ClCompile Include="FinalGame.cpp" />
+    <ClCompile Include="Prop.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="character.h" />
+    <ClInclude Include="Prop.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

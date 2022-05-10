@@ -3,6 +3,7 @@
 #include "raylib.h"
 #include "raymath.h"
 #include "character.h"
+#include "Prop.h"
 
 
 bool isOnGround(int yPos, int windowHeight, int height)
@@ -25,6 +26,9 @@ int main(int argc, char* argv[])
     SetTargetFPS(60);
 
     Character knight{windowDimensions[0],windowDimensions[1]};
+    Prop rock{Vector2{},LoadTexture("nature_tileset/Rock.png")};
+
+    Prop prop[2]{Prop{Vector2{600,300},LoadTexture("nature_tileset/Rock.png")},Prop{Vector2{400,500},LoadTexture("nature_tileset/Log.png")}};
 
     bool hasStarted{false};
     
@@ -44,15 +48,36 @@ int main(int argc, char* argv[])
         else
         {
             mapPos = Vector2Scale(knight.getWorldPos(),-1);
-        
+
+            //Draw map
             DrawTextureEx(tileMap,mapPos,0,mapScale,WHITE);
+
+            //Draw props
+            for (auto props : prop)
+            {
+                props.Render(knight.getWorldPos());
+            }
+
+            //Draw
             knight.tick(GetFrameTime());
             knight.keepCharacterInBound(knight,tileMap.width * mapScale,tileMap.height * mapScale,(float)windowDimensions[0],(float)windowDimensions[1]);
+            for (auto props : prop)
+            {
+                if(CheckCollisionRecs(knight.getCollisionRect(),props.getCollisionRect(knight.getWorldPos())))
+                {
+                    knight.undoMovement();
+                }
+            }
         }
         
         EndDrawing();
     }
-    
+
+    knight.unloadTexture();
+    for(auto props : prop)
+    {
+        props.unloadTexture();
+    }
     UnloadTexture(tileMap);
     CloseWindow();
     
