@@ -1,38 +1,47 @@
 ﻿#include "Enemy.h"
-#include <iostream>
 
-enemy::enemy(Vector2 pos, Texture2D idle, Texture2D run) : worldPos(pos), idle(idle), run(run),currentTexture(idle)
+#include <iostream>
+#include <string>
+
+enemy::enemy(Vector2 pos, Texture2D idleTex, Texture2D runTex)
 {
     width = (float)currentTexture.width/maxFrame;
     height = (float)currentTexture.height;
     rightLeft = 1;
+    worldPos = pos;
+    currentTexture = idleTex;
+    idle = idleTex;
+    run = runTex;
+    speed = 2;
+    health = 80;
 }
+
 void enemy::tick(float deltaTime)
 {
-    lastFrameWorldPos = worldPos;
+    if(!getAlive()) return;
+    //Get toTarget - Vector2 = Vector2Subtract(worldPos,target->getWorldPos());
+    velocity = Vector2Subtract(target->getScreenPos(), getScreenPos());
 
-    runningTime += deltaTime;
-    if(runningTime >= updateTime)
+    if(Vector2Length(velocity) < radius) velocity = {};
+    
+    if(CheckCollisionRecs(target->getCollisionRect(),getCollisionRect()))
     {
-        frame++;
-        runningTime = 0;
-        if(frame > maxFrame)
-        {
-            frame = 0;
-        }
+        target->takeDamage(damagePerSec * deltaTime);
     }
-    Rectangle sourceEnemyRect{width * frame,0, rightLeft * width ,height};
-    Rectangle destEnemyRect{screenPos.x,screenPos.y,width * scale, height * scale};
-        
-    DrawTexturePro(currentTexture,sourceEnemyRect,destEnemyRect,{0,0},0,WHITE);
-}
-void enemy::undoMovement()
-{
-    worldPos = lastFrameWorldPos;
+    
+    base_character::tick(deltaTime);
+    
+    DrawRectangle(getScreenPos().x + offset.x - 15, getScreenPos().y + offset.y, 15 * healthBarScale, 5 * scale, RED);
 }
 
-Rectangle enemy::getCollisionRect()
+Vector2 enemy::getScreenPos()
 {
-    return Rectangle{screenPos.x,screenPos.y,width * scale,height * scale};
+    return Vector2{Vector2Subtract(worldPos,target->getWorldPos())};
 }
+void enemy::takeDamage(float damage)
+{
+    base_character::takeDamage(damage);
+    healthBarScale--;
+}
+
 

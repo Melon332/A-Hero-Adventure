@@ -1,77 +1,55 @@
 ﻿#include "character.h"
 
-Character::Character(int winWidth, int winHeight)
+Character::Character(int winWidth, int winHeight) : windowWidth(winWidth), windowHeight(winHeight)
 {
     width = (float)currentTexture.width/maxFrame;
     height = (float)currentTexture.height;
-    screenPos = {static_cast<float>(winWidth) / 2.0f - scale * (0.5f * width), static_cast<float>(winHeight) / 2.0f - scale * (0.5f * height)};
     rightLeft = 1;
 }
+Vector2 Character::getScreenPos()
+{
+    return Vector2{static_cast<float>(windowWidth) / 2.0f - scale * (0.5f * width), static_cast<float>(windowHeight) / 2.0f - scale * (0.5f * height)};
+}
+
+
 void Character::tick(float deltaTime)
 {
-    Vector2 direction{0,0};
-    if(IsKeyDown(KEY_A)) direction.x -= 1;
-    if(IsKeyDown(KEY_D)) direction.x += 1;
-    if(IsKeyDown(KEY_W)) direction.y -= 1;
-    if(IsKeyDown(KEY_S)) direction.y += 1;
+    if(!getAlive()) return;
+    if(IsKeyDown(KEY_A)) velocity.x -= 1;
+    if(IsKeyDown(KEY_D)) velocity.x += 1;
+    if(IsKeyDown(KEY_W)) velocity.y -= 1;
+    if(IsKeyDown(KEY_S)) velocity.y += 1;
 
     lastFrameWorldPos = worldPos;
 
-    if(Vector2Length(direction) != 0.0)
+    base_character::tick(deltaTime);
+
+    //Draw sword
+    Vector2 origin{};
+    Vector2 offset{};
+    float rotation;
+    if(rightLeft > 0)
     {
-        currentTexture = run;
-        worldPos = Vector2Add(worldPos, Vector2Scale(Vector2Normalize(direction),speed));
-        direction.x < 0.f ? rightLeft = -1 : rightLeft = 1;
+        origin = {0.f,weapon.height * scale};
+        offset = {35.f,55.f};
+        weaponCollisonRec = {getScreenPos().x + offset.x, getScreenPos().y + offset.y - weapon.height * scale, weapon.width * scale, weapon.height * scale};
+        rotation = 35.f;
+        IsMouseButtonDown(MOUSE_LEFT_BUTTON) ? rotation = 35.f : rotation = 0;
     }
     else
     {
-        currentTexture = idle;
+        origin = {weapon.width * scale, weapon.height * scale};
+        offset = {25.f,55.f};
+        weaponCollisonRec = {getScreenPos().x + offset.x - weapon.width * scale, getScreenPos().y + offset.y - weapon.height * scale, weapon.width * scale, weapon.height * scale};
+        rotation = -35.f;
+        IsMouseButtonDown(MOUSE_LEFT_BUTTON) ? rotation = -35.f : rotation = 0;
     }
 
-    runningTime += deltaTime;
-    if(runningTime >= updateTime)
-    {
-        frame++;
-        runningTime = 0;
-        if(frame > maxFrame)
-        {
-            frame = 0;
-        }
-    }
-    Rectangle sourceRectKnight{width * frame,0, rightLeft * width ,height};
-    Rectangle destRectKnight{screenPos.x,screenPos.y,width * scale, height * scale};
-
-        
-    DrawTexturePro(currentTexture,sourceRectKnight,destRectKnight,{0,0},0,WHITE);
-}
-void Character::startFunction(int windowWidth, int windowHeight)
-{
-    int measure = MeasureText("Press any key to start!",20);
-    DrawText("Press W to start!", static_cast<float>(windowWidth) / 2.f - (float)measure / 2.5f , windowHeight / 2, 20 , SKYBLUE);
-}
-void Character::keepCharacterInBound(Character character, float mapWidth, float mapHeight, float windowWidth, float windowHeight)
-{
-    if(character.getWorldPos().x < 0 ||
-        character.getWorldPos().y < 0 ||
-        character.getWorldPos().x + windowWidth > mapWidth ||
-        character.getWorldPos().y + windowHeight > mapHeight)
-    {
-        undoMovement();
-    } 
-}
-void Character::undoMovement()
-{
-    worldPos = lastFrameWorldPos;
-}
-void Character::unloadTexture()
-{
-    UnloadTexture(currentTexture);
-    UnloadTexture(run);
-    UnloadTexture(idle);
-}
-Rectangle Character::getCollisionRect()
-{
-    return Rectangle{screenPos.x,screenPos.y,width * scale,height * scale};
+    Rectangle swordSource{0,0,static_cast<float>(weapon.width) * rightLeft,static_cast<float>(weapon.height)};
+    Rectangle swordDest{getScreenPos().x + offset.x,getScreenPos().y + offset.y ,weapon.width * scale, weapon.height * scale};
+    
+    DrawTexturePro(weapon,swordSource,swordDest,origin,rotation,WHITE);
+    DrawRectangleLines(0,0,windowWidth,windowHeight,RED);
 }
 
 

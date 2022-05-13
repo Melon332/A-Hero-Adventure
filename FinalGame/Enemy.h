@@ -1,34 +1,21 @@
 ﻿#include "raylib.h"
 #include "raymath.h"
+#include "BaseCharacter.h"
+#include "character.h"
 
-class enemy
+class enemy : public base_character
 {
 public:
     enemy(Vector2 pos, Texture2D idleTex, Texture2D runTex);
-    Vector2 getWorldPos() { return worldPos;}
-    void tick(float deltaTime);
-    void keepCharacterInBound(enemy character, float mapWidth, float mapHeight,float windowWidth, float windowHeight);
-    void undoMovement();
-    void unloadTexture();
-    Rectangle getCollisionRect();
-
+    void tick(float deltaTime) override;
+    void setTarget(Character* player) {target = player;}
+    Vector2 getScreenPos() override;
+    void setWorldPos(Vector2 pos) { worldPos = pos;}
+    void takeDamage(float damage) override;
 private:
-    //Texture variables
-    Texture2D currentTexture{LoadTexture("characters/knight_idle_spritesheet.png")};
-    Texture2D idle{LoadTexture("characters/knight_idle_spritesheet.png")};
-    Texture2D run{LoadTexture("characters/knight_run_spritesheet.png")};
-    Vector2 screenPos{};
-    Vector2 worldPos{};
-    //Animation variables
-    float rightLeft{0.f};
-    float runningTime{0.f};
-    const float updateTime{1.f/12.f};
-    const int maxFrame{6};
-    int frame{0};
-    const float speed {10};
-    const float scale{4.0};
-    float width{};
-    float height{};
-    Vector2 lastFrameWorldPos{};
-    
+    Character* target;
+    float damagePerSec{10.f};
+    float radius{25.f};
+    Vector2 offset{25, -10};
+    float healthBarScale{4};
 };
